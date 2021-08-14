@@ -21,7 +21,7 @@ class MainPageController extends AbstractController
         $form->handleRequest($request);
         if ($form->isSubmitted()) {
             $analyzer = new Analyzer();
-            $analyzer->analyzeUrl('http://www.msn.com/en-us');
+            $analyzer->analyzeUrl('http://www.msn.com/en-us', 'key');
         }
         return $this->render('analyze/index.html.twig', [
             'seo_analyze_form' => $form->createView(),

@@ -9,6 +9,7 @@ class Analyzer
 {
     private $locale = 'en_GB';
     private $client;
+    private $metrics = [];
 
     public function __construct($page = null, ClientInterface $client = null)
     {
@@ -46,12 +47,16 @@ class Analyzer
             throw new \Exception();
 //            throw new InvalidArgumentException('No Page to analyze');
         }
+
         if (empty($this->metrics)) {
             $this->metrics = $this->getMetrics();
         }
         $results = [];
+//        dd($this->metrics);
+//        dd($this->metrics);
         foreach ($this->metrics as $metric) {
             if ($analysisResult = $metric->analyze()) {
+                dd($analysisResult);
                 $results[$metric->name] = $this->formatResults($metric, $analysisResult);
             }
         }

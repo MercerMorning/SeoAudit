@@ -76,6 +76,8 @@ class Page
             $config = [self::LOCALE => $this->locale];
         }
         $this->setConfig($config);
+
+//        dd($this->config);
         if (!empty($url)) {
             $this->url = $this->setUpUrl($url);
             $this->getContent();
@@ -107,9 +109,9 @@ class Page
         }
         $this->setFactor(Factor::URL_PARSED, $parsedUrl);
 
-        if (strcmp($parsedUrl['scheme'], 'https') === 0) {
-            $this->setFactor(Factor::SSL, true);
-        }
+//        if (strcmp($parsedUrl['scheme'], 'https') === 0) {
+//            $this->setFactor(Factor::SSL, true);
+//        }
         $this->setFactor(
             Factor::URL_LENGTH,
             strlen($this->getFactor(Factor::URL_PARSED_HOST) . $this->getFactor(Factor::URL_PARSED_PATH))
@@ -127,9 +129,9 @@ class Page
         $this->setFactor(Factor::LOAD_TIME, $pageLoadFactors['time']);
         $this->content = $pageLoadFactors['content'];
         $this->setFactor(Factor::REDIRECT, $pageLoadFactors['redirect']);
-        if (empty($this->getFactor(Factor::SSL)) && $this->getSSLResponseCode() == 200) {
-            $this->setFactor(Factor::SSL, true);
-        }
+//        if (empty($this->getFactor(Factor::SSL)) && $this->getSSLResponseCode() == 200) {
+//            $this->setFactor(Factor::SSL, true);
+//        }
     }
 
     /**
@@ -228,6 +230,7 @@ class Page
             $this->parse();
         }
         $this->setUpContentFactors();
+//        dd($this->keyword);
         if (!empty($this->keyword)) {
             $this->setUpContentKeywordFactors($this->keyword);
         }
@@ -310,13 +313,16 @@ class Page
     public function setUpMetrics(array $config = [])
     {
         $metrics = [];
+//        dd($config);
         foreach ($config as $factor) {
             $metric = $factor;
             if (is_array($factor)) {
                 $metric = current($factor);
                 $factor = key($factor);
             }
+//            dd($factor);
             $metricObject = MetricFactory::get('page.' . $metric, $this->getFactor($factor));
+//            dd($metricObject);
 //            if (!$metricObject instanceof KeywordBasedMetricInterface || !empty($this->keyword)) {
                 $metrics['page_' . str_replace('.', '_', $metric)] = $metricObject;
 //            }

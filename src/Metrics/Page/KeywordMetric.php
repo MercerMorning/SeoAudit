@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Metrics;
+namespace App\Metrics\Page;
 
+use App\Metrics\AbstractMetric;
 
 class KeywordMetric extends AbstractMetric
 {
@@ -12,7 +13,6 @@ class KeywordMetric extends AbstractMetric
      */
     public function analyze(): string
     {
-
         $this->name = 'Keyword' . $this->value['type'];
         if (stripos($this->value['text'], $this->value['keyword']) === false) {
             $this->impact = $this->value['impact'];
