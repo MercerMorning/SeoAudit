@@ -1,6 +1,7 @@
 <?php
 namespace App\Parsers;
 
+use App\Metrics\MetricFactory;
 use GuzzleHttp\Client;
 use GuzzleHttp\ClientInterface;
 use App\Factors\Factor;
@@ -13,6 +14,52 @@ class Page
     const IMPACT = 'impact';
     const TEXT = 'text';
     const HEADERS = 'headers';
+
+    /**
+     * @var string Page locale
+
+    public $url;
+
+    /**
+     * @var array Configuration
+     */
+    public $config;
+
+    /**
+     * @var string Page locale
+     */
+    public $locale = 'en_GB';
+
+    /**
+     * @var string Keyword to use in analyse
+     */
+    public $keyword;
+
+    /**
+     * @var array Stop word used in keyword density analyse
+     */
+    public $stopWords = [];
+
+    /**
+     * @var string Web page content (html)
+     */
+    public $content;
+
+    /**
+     * @var array Web page factors values
+     */
+    public $factors = [];
+
+    /**
+     * @var ClientInterface
+     */
+    public $client;
+
+    /**
+     * @var ParserInterface
+     */
+    public $parser;
+
 
     public function __construct(
         string $url = null,
@@ -37,7 +84,7 @@ class Page
 
     public function setConfig(array $config)
     {
-        $this->config = require '/config/seo.php';
+        $this->config = require ('../config/seo.php');
         foreach ($this->config as $configItemKey => $configItemValue) {
             if (isset($config[$configItemKey])) {
                 $this->config[$configItemKey] = $configItemValue;
@@ -93,8 +140,8 @@ class Page
      */
     protected function getPageLoadFactors(int $ttl = 300): array
     {
-        $cache = new Cache();
-        return $cache->remember('page_content_'. base64_encode($this->url), function () {
+//        $cache = new Cache();
+//        return $cache->remember('page_content_'. base64_encode($this->url), function () {
             $starTime = microtime(true);
             $response = $this->client->get($this->url);
             $loadTime = number_format((microtime(true) - $starTime), 4);
@@ -107,7 +154,7 @@ class Page
                 'time' => $loadTime,
                 'redirect' => $redirect
             ];
-        }, $ttl);
+//        }, $ttl);
     }
 
     /**
@@ -118,18 +165,18 @@ class Page
      */
     protected function getSSLResponseCode(int $ttl = 300)
     {
-        $cache = new Cache();
-        return $cache->remember(
-            'https_response_code_' . base64_encode('https://' . $this->url),
-            function () {
-                try {
-                    return $this->client->get(str_replace('http://', 'https://', $this->url))->getStatusCode();
-                } catch (HttpException $e) {
-                    return false;
-                }
-            },
-            $ttl
-        );
+//        $cache = new Cache();
+//        return $cache->remember(
+//            'https_response_code_' . base64_encode('https://' . $this->url),
+//            function () {
+//                try {
+//                    return $this->client->get(str_replace('http://', 'https://', $this->url))->getStatusCode();
+//                } catch (HttpException $e) {
+//                    return false;
+//                }
+//            },
+//            $ttl
+//        );
     }
 
     /**
@@ -201,12 +248,12 @@ class Page
             Factor::DENSITY_PAGE => [
                 self::TEXT => $this->getFactor(Factor::TEXT),
                 self::LOCALE => $this->locale,
-                self::STOP_WORDS => $this->stopWords
+//                self::STOP_WORDS => $this->stopWords
             ],
             Factor::DENSITY_HEADERS => [
                 self::HEADERS => $this->getFactor(Factor::HEADERS),
                 self::LOCALE => $this->locale,
-                self::STOP_WORDS => $this->stopWords
+//                self::STOP_WORDS => $this->stopWords
             ]
         ]);
     }
@@ -270,9 +317,9 @@ class Page
                 $factor = key($factor);
             }
             $metricObject = MetricFactory::get('page.' . $metric, $this->getFactor($factor));
-            if (!$metricObject instanceof KeywordBasedMetricInterface || !empty($this->keyword)) {
+//            if (!$metricObject instanceof KeywordBasedMetricInterface || !empty($this->keyword)) {
                 $metrics['page_' . str_replace('.', '_', $metric)] = $metricObject;
-            }
+//            }
         }
         return $metrics;
     }
