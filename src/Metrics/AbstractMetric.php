@@ -37,16 +37,9 @@ abstract class AbstractMetric
      */
     public $impact = 0;
 
-    /**
-     * @param mixed $inputData Input data to compute metric value
-     * @throws ReflectionException
-     */
-    public function __construct($inputData)
+    public function setValue($inputValue)
     {
-        if (empty($this->name)) {
-            $this->name = str_replace(['SeoAnalyzer\\', 'Metric', '\\'], '', (new ReflectionClass($this))->getName());
-        }
-        $this->value = $inputData;
+        $this->value = $inputValue;
     }
 
     /**

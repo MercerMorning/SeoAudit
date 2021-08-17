@@ -2,6 +2,7 @@
 
 namespace App\Metrics;
 
+use App\Metrics\Page\TitleMetric;
 use ReflectionException;
 
 class MetricFactory
@@ -12,17 +13,13 @@ class MetricFactory
      * @return mixed
      * @throws ReflectionException
      */
-    public static function get(string $key, $inputData = null)
+    public static function get(string $key)
     {
-        $class = __NAMESPACE__;
-        $path = explode(".", $key);
-        foreach ($path as $level) {
-            $class.= '\\' . ucfirst($level);
-        }
-        $class.= 'Metric';
-        if (class_exists($class)) {
-            return new $class($inputData);
-        }
-        throw new ReflectionException('Metric class ' . $class .' not exists');
+        return self::$key();
+    }
+
+    public static function title()
+    {
+        return new TitleMetric();
     }
 }

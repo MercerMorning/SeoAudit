@@ -3,35 +3,21 @@ namespace App\Services;
 
 use App\Parsers\Page;
 use GuzzleHttp\Client;
-use GuzzleHttp\ClientInterface;
+use SeoAnalyzer\Metric\MetricInterface;
 
 class Analyzer
 {
-    private $locale = 'en_GB';
     private $client;
     private $metrics = [];
 
-    public function __construct($page = null, ClientInterface $client = null)
+    public function __construct()
     {
-        $this->client = $client;
-        if (empty($client)) {
-            $this->client = new Client();
-        }
-
-        if (!empty($page)) {
-            $this->page = $page;
-        }
+        $this->client = new Client();
     }
 
-    public function analyzeUrl(string $url, string $keyword = null, string $locale = null): array
+    public function analyzeUrl(string $url): array
     {
-        if (!empty($locale)) {
-            $this->locale = $locale;
-        }
-        $this->page = new Page($url, $locale, $this->client);
-        if (!empty($keyword)) {
-            $this->page->keyword = $keyword;
-        }
+        $this->page = new Page($url, $this->client);
         return $this->analyze();
     }
 
@@ -44,19 +30,15 @@ class Analyzer
     public function analyze()
     {
         if (empty($this->page)) {
-            throw new \Exception();
-//            throw new InvalidArgumentException('No Page to analyze');
+            throw new \Exception('No Page to analyze');
         }
-
         if (empty($this->metrics)) {
             $this->metrics = $this->getMetrics();
         }
         $results = [];
-//        dd($this->metrics);
-//        dd($this->metrics);
+
         foreach ($this->metrics as $metric) {
             if ($analysisResult = $metric->analyze()) {
-                dd($analysisResult);
                 $results[$metric->name] = $this->formatResults($metric, $analysisResult);
             }
         }
@@ -65,6 +47,17 @@ class Analyzer
 
     public function getMetrics(): array
     {
-        return array_merge($this->page->getMetrics());
+        return $this->page->setMetrics();
+    }
+
+    protected function formatResults( $metric, string $results): array
+    {
+        return [
+            'analysis' => $results,
+            'name' => $metric->name,
+            'description' => $metric->description,
+            'value' => $metric->value,
+            'negative_impact' => $metric->impact,
+        ];
     }
 }
