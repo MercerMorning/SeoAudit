@@ -17,7 +17,14 @@ class Analyzer
 
     public function analyzeUrl(string $url): array
     {
+        // Реализация фасада
+
         $this->page = new Page($url, $this->client);
+        if (strpos($url, 'ru')) {
+            $this->page->setLocale('ru');
+        } else {
+            $this->page->setLocale('en');
+        }
         return $this->analyze();
     }
 

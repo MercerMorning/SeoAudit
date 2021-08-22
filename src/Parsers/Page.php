@@ -25,6 +25,13 @@ class Page
 
     public $url;
 
+    private $locale;
+
+    public function setLocale($locale)
+    {
+        $this->locale = $locale;
+    }
+
 
     public function __construct(
         string $url
